@@ -10,20 +10,17 @@ const securityHelper = require('../../security-helper');
 const Jwt = require('../../helper/token-generate');
 const UserDetailsFormat = require('../../helper/user-details-send');
 
-
-
-
 const jwt = new Jwt();
 const detailsFormat = new UserDetailsFormat();
 module.exports = {
     async signUp(req, res) {
         try {
-            if (validation.bodyCheck(req.body) && validation.validName(req.body.firstName.trim()) && validation.validName(req.body.lastName.trim()) && validation.validNumber(req.body.mobile.trim()) && validation.presentData(req.body.password, 'password') && validation.presentData(req.body.type.trim(), 'user-type')) {
+            if (validation.bodyCheck(req.body) && validation.validName(req.body.firstName.trim()) && validation.validName(req.body.lastName.trim()) && validation.presentData(req.body.password, 'password') && validation.validEmail(req.body.email.trim()) && validation.genderCheck(req.body.gender, 'gender')) {
                 //console.log('Valid');
-                let data = await User.findOne({ 'mobile': req.body.mobile })
                 //console.log('=====', data);
+                let data = await User.findOne({ 'email': req.body.email });
                 if (data)
-                    throw E.createError(E.getError('DUPLICATE_RESOURCE'), 'This number already exist')
+                    throw E.createError(E.getError('DUPLICATE_RESOURCE'), 'This email already exist');
                 let userAuth = new UserAuth();
                 userAuth.password = req.body.password;
                 userAuth.verify_pin = securityHelper.pinGenerater();
@@ -31,13 +28,12 @@ module.exports = {
                 let user = new User();
                 user.first_name = req.body.firstName.toUpperCase();
                 user.last_name = req.body.lastName.toUpperCase();
-                user.mobile = req.body.mobile;
                 user.auth = authData._id;
-                user.type = req.body.type;
                 let userDetails = await user.save();
                 authData.user_id = userDetails._id;
                 await authData.save();
-                response.create(res, { id: userDetails._id, pin: authData.verify_pin, mobile: userDetails.mobile })
+                let result = User.findOne({email: userDetails.email}).populate({path: 'auth'});
+                response.create(res, result);
             }
         }
         catch (err) {
@@ -106,14 +102,14 @@ module.exports = {
 
     async login(req, res) {
         try {
-            if(validation.bodyCheck(req.body) && validation.presentData(req.body.userName, 'username') && validation.presentData(req.body.password, 'password')){
-                let user = await User.findOne({mobile: req.body.userName}).populate({'path': auth});
-                if(!user)
+            if (validation.bodyCheck(req.body) && validation.presentData(req.body.userName, 'username') && validation.presentData(req.body.password, 'password')) {
+                let user = await User.findOne({ mobile: req.body.userName }).populate({ 'path': auth });
+                if (!user)
                     throw E.createError(E.getError('USER_NOT_FOUND', 'Invalid username'));
-                if(!securityHelper.hashCompare(req.body.password, user.auth.password))
-                    throw E.createError(E.getError('USER_NOT_FOUND', 'Invalid password')); 
+                if (!securityHelper.hashCompare(req.body.password, user.auth.password))
+                    throw E.createError(E.getError('USER_NOT_FOUND', 'Invalid password'));
                 await jwt.generateTokenAndStore();
-                let userInfo = await User.findOne({_id: user._id});
+                let userInfo = await User.findOne({ _id: user._id });
                 response.ok(res, await detailsFormat(userInfo));
             }
         }

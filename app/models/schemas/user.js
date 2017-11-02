@@ -13,9 +13,6 @@ module.exports = new Schema({
         state: { type: String, trim: true, default: null },
         country: { type: String, trim: true, default: 'INDIA' }
     },
-    type: {
-        type: String, required: true, trim: true
-    },
     profile_image: { type: String, default: null },
     gender: { type: String, trim: true, enum: ['MALE', 'FEMALE', 'OTHERS'] },
     auth: { type: mongoose.SchemaTypes.ObjectId, ref: 'UserAuth' },

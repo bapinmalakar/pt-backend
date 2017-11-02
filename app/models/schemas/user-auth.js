@@ -9,7 +9,6 @@ module.exports = new Schema({
     security_key: { type: String, default: null },
     access_token: { type: String, default: null },
     refresh_token: { type: String, default: null },
-    login_pin: { type: String, default: null },
     verify_pin: { type: String, default: null },
     password: { type: String, required: true, set: hashPassword }
 }, {
