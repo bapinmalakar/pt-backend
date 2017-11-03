@@ -4,9 +4,9 @@ const Schema = mongoose.Schema;
 
 module.exports = new Schema({
     first_name: { type: String, required: true, trim: true },
-    last_name: { type: String, required: true, trim: true },
-    email: { type: String, required: true, default: null, trim: true, unique: true },
-    mobile: { type: String, trim: true, unique: true },
+    last_name: { type: String, default: null, trim: true },
+    email: { type: String, required: true, trim: true, unique: true },
+    mobile: { type: String, trim: true, default: '' },
     address: {
         area: { type: String, trim: true, default: null },
         city: { type: String, trim: true, default: null },

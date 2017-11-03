@@ -17,7 +17,7 @@ module.exports = {
             if (!data)
                 throw E.createError(E.getError('CREDANTIAL_MISMATCH'), 'Invalid Token');
             let decodeData = await jwt.decodeAccessToken(token, data.security_key);
-            if (data.user_id.type == decodeData.userType && decodeData.userType == user && decodeData.type == 'access-token' && data.user_id.mobile == decodeData.user)
+            if ('User' == decodeData.userType && decodeData.userType == user && decodeData.type == 'access-token' && data.user_id.email == decodeData.user)
                 next();
             else
                 throw E.createError(E.getError('CREDANTIAL_MISMATCH'), 'Invalid Token');
@@ -37,7 +37,7 @@ module.exports = {
             if (!data)
                 throw E.createError(E.getError('CREDANTIAL_MISMATCH'), 'Invalid Token');
             let decodeData = await jwt.decodeAccessToken(token, data.security_key);
-            if (data.user_id.type == decodeData.userType && decodeData.userType == user && decodeData.type == 'refresh-token' && data.user_id.mobile == decodeData.user)
+            if ('User' == decodeData.userType && decodeData.userType == user && decodeData.type == 'refresh-token' && data.user_id.email == decodeData.user)
                 next();
             else
                 throw E.createError(E.getError('CREDANTIAL_MISMATCH'), 'Invalid Token');
