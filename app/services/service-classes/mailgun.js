@@ -13,7 +13,8 @@ module.exports = class Mailgun {
                 from: 'Problem Tracker<bapinmalakar383@gmail.com>',
                 to: data.to,
                 subject: data.subject,
-                text: data.text
+                text: data.text ? data.text : '',
+                html: data.html ? data.html : ''
             };
             this.mailgun.messages().send(msg, (err, res) => {
                 console.log('Mail gun Error is: ', err);

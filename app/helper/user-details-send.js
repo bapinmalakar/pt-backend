@@ -28,6 +28,11 @@ module.exports = class Details {
             sendData.text = 'User this code ' + data.code;
             sendData.html = '<h1>Your Problem Tracker Account Activatiov Code</h1><br><h3>' + data.code + '</h3>';
         }
+        else if(type == 'later'){
+            sendData.to = data.email;
+            sendData.subject = '6-Character activation code for activate your account of Problem-Tracker now :)';
+            sendData.html = '<h1>Your Problem Tracker Account Activatiov Code</h1><br><h3>' + data.code + '</h3>';
+        }
         return sendData;
     }
 }

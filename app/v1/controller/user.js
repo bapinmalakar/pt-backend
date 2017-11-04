@@ -133,5 +133,23 @@ module.exports = {
             console.log('Error is: ', err);
             response.error(res, err);
         }
+    },
+    async laterPinRequest(req, res) {
+        try {
+            let email = req.params.email;
+            let data = await User.findOne({ email: email });
+            if (validation.usernotFound(data)) {
+                const code = securityHelper.pinGenerater();
+                const sendData = detailsFormat.mailFormatData({ email, code }, 'later');
+                await serviceCaller.mailSend(sendData);
+                await UserAuth.findOneAndUpdate({ user_id: data._id }, { $set: { verify_pin: code } }, { new: true });
+                response.update(res, { _id: data._id });
+            }
+        }
+        catch (err) {
+            console.log('Later pin send error: ', err);
+            response.error(res, err);
+        }
     }
+
 }
