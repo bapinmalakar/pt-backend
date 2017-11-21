@@ -10,10 +10,10 @@ module.exports = async (req, res, next) => {
         if (req.headers.authorization) {
             let data = req.headers.authorization.split(' ');
             data = new Buffer(data[1], 'base64').toString().split(':');
-            //console.log('Secret are: ', data);
+            // console.log('Secret are: ', data);
             let credential = await AppSecret.findOne({ client_id: data[0] });
             if (credential && data[1] == credential.client_secret) {
-                console.log('Done....');
+                //console.log('Done....');
                 next();
             }
             else

@@ -117,12 +117,12 @@ module.exports = {
 
     async login(req, res) {
         try {
-            if (validation.bodyCheck(req.body) && validation.presentData(req.body.userName, 'username') && validation.presentData(req.body.password, 'password')) {
-                let user = await User.findOne({ email: req.body.email }).populate({ 'path': auth });
+            if (validation.bodyCheck(req.body) && validation.presentData(req.body.username, 'username') && validation.presentData(req.body.password, 'password')) {
+                let user = await User.findOne({ email: req.body.username }).populate({ 'path': 'auth' });
                 if (!user)
-                    throw E.createError(E.getError('USER_NOT_FOUND', 'Invalid username'));
+                    throw E.createError(E.getError('USER_NOT_FOUND'), 'Invalid username');
                 if (!securityHelper.hashCompare(req.body.password, user.auth.password))
-                    throw E.createError(E.getError('USER_NOT_FOUND', 'Invalid password'));
+                    throw E.createError(E.getError('USER_NOT_FOUND'), 'Invalid password');
                 await jwt.generateTokenAndStore(user);
                 let userInfo = await User.findOne({ _id: user._id }).populate({ path: 'auth' });
                 userInfo.auth.password = '';
@@ -130,7 +130,7 @@ module.exports = {
             }
         }
         catch (err) {
-            console.log('Error is: ', err);
+            // console.log('Error is: ', err);
             response.error(res, err);
         }
     },
