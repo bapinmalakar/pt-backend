@@ -8,8 +8,7 @@ const E = require('../../response/error');
 module.exports = {
     generateAccessToken: (payload, key) => {
         return new Promise((resolve, reject) => {
-            console.log('Payload is: ', payload);
-            jwt.sign(payload, key, { expiresIn: 60 * 60 }, (err, data) => {
+            jwt.sign(payload, key, { expiresIn: 172800 }, (err, data) => {
                 if (err) {
                     console.log('Error Token: ', err);
                     reject(E.createError(E.getError('INTERNAL_SERVER'), 'Access Token Generate'));

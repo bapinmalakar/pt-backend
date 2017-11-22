@@ -26,8 +26,7 @@ module.exports = {
 
                 const code = securityHelper.pinGenerater();
                 const sendData = detailsFormat.mailFormatData({ email: req.body.email, code: code }, 'signin');
-                console.log('Send data: ', sendData);
-                await serviceCaller.mailSend(sendData);
+                await serviceCaller.mailSend(sendData, 'mailgun');
                 let userAuth = new UserAuth();
                 userAuth.password = req.body.password;
                 userAuth.verify_pin = code;
@@ -42,7 +41,6 @@ module.exports = {
 
                 authData.user_id = userDetails._id;
                 await authData.save();
-
                 response.create(res, { _id: userDetails._id });
             }
         }
@@ -63,7 +61,7 @@ module.exports = {
                         const userInfo = await User.findOne({ _id: user.user_id });
                         await jwt.generateTokenAndStore(userInfo);
                         const userDetails = await User.findOne({ _id: userInfo._id }).populate({ path: 'auth' });
-                        response.update(res, userDetails);
+                        response.update(res, detailsFormat.formateData(userDetails));
                     }
                 }
             }
@@ -104,7 +102,7 @@ module.exports = {
             if (validation.usernotFound(user)) {
                 const code = securityHelper.pinGenerater();
                 const sendData = detailsFormat.mailFormatData({ email: user.email, code }, 'resend');
-                await serviceCaller.mailSend(sendData);
+                await serviceCaller.mailSend(sendData, 'mailgun');
                 let data = await UserAuth.findOneAndUpdate({ user_id: req.params.id }, { $set: { verify_pin: code } }, { new: true });
                 response.update(res, { _id: user._id });
             }
@@ -125,12 +123,11 @@ module.exports = {
                     throw E.createError(E.getError('USER_NOT_FOUND'), 'Invalid password');
                 await jwt.generateTokenAndStore(user);
                 let userInfo = await User.findOne({ _id: user._id }).populate({ path: 'auth' });
-                userInfo.auth.password = '';
                 response.ok(res, detailsFormat.formateData(userInfo));
             }
         }
         catch (err) {
-            // console.log('Error is: ', err);
+            console.log('Error is: ', err);
             response.error(res, err);
         }
     },
@@ -150,6 +147,30 @@ module.exports = {
             console.log('Later pin send error: ', err);
             response.error(res, err);
         }
-    }
+    },
 
+    async getUserData(req, res) {
+        try {
+            let user = await User.findOne({ _id: req.params.id }).populate({ path: 'auth' });
+            response.ok(res, user ? user : {});
+        }
+        catch (err) {
+            response.error(res, err);
+        }
+    },
+
+    async logOut(req, res) {
+        try {
+            let userAuth = await UserAuth.findOne({ user_id: req.params.id });
+            userAuth.access_token = '';
+            userAuth.refresh_token = '';
+            userAuth.security_key = '';
+            await userAuth.save();
+            response.update(res, { masg: 'done' });
+        }
+        catch (err) {
+            console.log('Error: ', err);
+            response.error(res, E.createError(E.getError('INTERNAL_SERVER')));
+        }
+    }
 }

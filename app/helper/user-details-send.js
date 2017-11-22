@@ -4,9 +4,13 @@ module.exports = class Details {
     constructor() { }
 
     formateData(userInfo) {
-        userInfo.auth.password = '';
-        userInfo.auth.security_key = '';
-        return userInfo;
+       let data = {
+           _id: userInfo._id,
+           access_token: userInfo.auth.access_token,
+           refresh_token: userInfo.auth.refresh_token,
+           email: userInfo.email
+       }
+        return data;
     }
 
     mailFormatData(data, type) {

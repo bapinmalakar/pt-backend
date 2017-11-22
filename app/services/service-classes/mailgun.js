@@ -17,8 +17,8 @@ module.exports = class Mailgun {
                 html: data.html ? data.html : ''
             };
             this.mailgun.messages().send(msg, (err, res) => {
-                console.log('Mail gun Error is: ', err);
-                console.log('Mail gun response is: ', res);
+                // console.log('Mail gun Error is: ', err);
+                // console.log('Mail gun response is: ', res);
                 if (!err) resolve(res);
                 else reject(err);
             });
