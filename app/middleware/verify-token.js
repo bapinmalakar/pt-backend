@@ -15,7 +15,7 @@ module.exports = {
             let [user, token] = req.headers.auth_header.split(' ', 2);
             let data = await UserAuth.findOne({ user_id: req.params.id, access_token: { $ne: '' }, access_token: token }).populate({ path: 'user_id' });
             if (!data)
-                throw E.createError(E.getError('CREDANTIAL_MISMATCH'), 'Invalid Token');
+                throw E.createError(E.getError('CREDANTIAL_MISMATCH'), 'Invalid Access Token');
             let decodeData = await jwt.decodeAccessToken(token, data.security_key);
             if ('User' == decodeData.userType && decodeData.userType == user && decodeData.type == 'access-token' && data.user_id.email == decodeData.user)
                 next();
@@ -40,7 +40,7 @@ module.exports = {
             if ('User' == decodeData.userType && decodeData.userType == user && decodeData.type == 'refresh-token' && data.user_id.email == decodeData.user)
                 next();
             else
-                throw E.createError(E.getError('CREDANTIAL_MISMATCH'), 'Invalid Token');
+                throw E.createError(E.getError('CREDANTIAL_MISMATCH'), 'Invalid Refresh Token');
         }
         catch (err) {
             response.error(res, err);
