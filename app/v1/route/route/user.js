@@ -15,6 +15,8 @@ module.exports = [
     { api: '/user/:id/activate-account', method: 'POST', actions: [auth, user.acitivateAccount] },
     { api: '/user/:id/details-save', method: 'PUT', actions: [auth, user.updateDetails] },
 
-    {api: '/user/:id/update_image', method: 'PUT', actions: [tokenAuth.accessTokenVerify, user.uploadeImage]}
+    {api: '/user/:id/update_image', method: 'PUT', actions: [tokenAuth.accessTokenVerify, user.uploadeImage]},
+    {api: '/user/:id/update_image', method: 'PUT', actions: [tokenAuth.accessTokenVerify, user.updateAddess]},
+    {api: '/user/:id/update_image', method: 'PUT', actions: [tokenAuth.accessTokenVerify, user.updateDescription]}
 
 ]

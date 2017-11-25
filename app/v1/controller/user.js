@@ -187,5 +187,34 @@ module.exports = {
             console.log('Uplaod Error: ', err);
             response.error(res, err);
         }
+    },
+
+    async updateAddess(req,res){
+        try {
+            let user = await User.findOne({ _id: req.params.id });
+            if (validation.userFound(user)) {
+                user.address = req.body.address || user.address;
+                await user.save();
+                res.update(res, user);
+            }
+        }
+        catch (err) {
+            console.log('Description update error: ', err);
+            response.error(res, err);
+        }
+    },
+    async updateDescription(req, res) {
+        try {
+            let user = await User.findOne({ _id: req.params.id });
+            if (validation.userFound(user)) {
+                user.description = req.body.description || user.description;
+                await user.save();
+                res.update(res, user);
+            }
+        }
+        catch (err) {
+            console.log('Description update error: ', err);
+            response.error(res, err);
+        }
     }
 }
