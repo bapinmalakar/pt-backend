@@ -54,7 +54,7 @@ module.exports = {
         try {
             if (validation.bodyCheck(req.body) && validation.presentData(req.body.pin, 'pin')) {
                 let user = await UserAuth.findOne({ user_id: req.params.id });
-                if (validation.usernotFound(user)) {
+                if (validation.userFound(user)) {
                     if (validation.verifyPin(req.body.pin, user.verify_pin)) {
                         await UserAuth.findOneAndUpdate({ user_id: req.params.id }, { $set: { verify_pin: '' } });
                         await User.findOneAndUpdate({ _id: req.params.id }, { $set: { verified_email: true, active: true } });
@@ -76,7 +76,7 @@ module.exports = {
         try {
             if (validation.bodyCheck(req.body) && validation.genderCheck(req.body.gender.trim().toLowerCase(), validation.presentData(req.body.address, 'address'))) {
                 let user = await User.findOne({ '_id': req.params.id });
-                if (validation.usernotFound(user)) {
+                if (validation.userFound(user)) {
                     let address = req.body.address;
                     for (let key in address)
                         address[key] = address[key].toUpperCase();
@@ -99,7 +99,7 @@ module.exports = {
     async resendVerifiedCode(req, res) {
         try {
             let user = await User.findOne({ _id: req.params.id });
-            if (validation.usernotFound(user)) {
+            if (validation.userFound(user)) {
                 const code = securityHelper.pinGenerater();
                 const sendData = detailsFormat.mailFormatData({ email: user.email, code }, 'resend');
                 await serviceCaller.mailSend(sendData, 'mailgun');
@@ -135,7 +135,7 @@ module.exports = {
         try {
             let email = req.params.email;
             let data = await User.findOne({ email: email });
-            if (validation.usernotFound(data)) {
+            if (validation.userFound(data)) {
                 const code = securityHelper.pinGenerater();
                 const sendData = detailsFormat.mailFormatData({ email, code }, 'later');
                 await serviceCaller.mailSend(sendData);
@@ -171,6 +171,21 @@ module.exports = {
         catch (err) {
             console.log('Error: ', err);
             response.error(res, E.createError(E.getError('INTERNAL_SERVER')));
+        }
+    },
+
+    async uploadeImage(req, res) {
+        try {
+            let user = await User.findOne({ _id: req.params.id });
+            if (validation.userFound(user)) {
+                user.profile_image = req.body.url;
+                await user.save();
+                response.update(res, user);
+            }
+        }
+        catch (err) {
+            console.log('Uplaod Error: ', err);
+            response.error(res, err);
         }
     }
 }

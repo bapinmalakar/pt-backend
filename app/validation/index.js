@@ -28,7 +28,7 @@ module.exports = {
         if(!emailExp.test(email))  throw E.createError(E.getError('DATA_FORMAT'), 'email');
         return true;
     },
-    usernotFound(user) {
+    userFound(user) {
         if (!user)
             throw E.createError(E.getError('USER_NOT_FOUND'), 'User not found');
         return true;

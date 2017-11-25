@@ -13,6 +13,8 @@ module.exports = [
     { api: '/user/sign', method: 'POST', actions: [auth, user.signUp] },
     { api: '/user/login', method: 'POST', actions: [auth, user.login] },
     { api: '/user/:id/activate-account', method: 'POST', actions: [auth, user.acitivateAccount] },
-    { api: '/user/:id/details-save', method: 'PUT', actions: [auth, user.updateDetails] }
+    { api: '/user/:id/details-save', method: 'PUT', actions: [auth, user.updateDetails] },
+
+    {api: '/user/:id/update_image', method: 'PUT', actions: [tokenAuth.accessTokenVerify, user.uploadeImage]}
 
 ]
