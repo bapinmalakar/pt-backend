@@ -138,7 +138,7 @@ module.exports = {
             if (validation.userFound(data)) {
                 const code = securityHelper.pinGenerater();
                 const sendData = detailsFormat.mailFormatData({ email, code }, 'later');
-                await serviceCaller.mailSend(sendData);
+                await serviceCaller.mailSend(sendData, 'mailgun');
                 await UserAuth.findOneAndUpdate({ user_id: data._id }, { $set: { verify_pin: code } }, { new: true });
                 response.update(res, { _id: data._id });
             }
@@ -189,13 +189,13 @@ module.exports = {
         }
     },
 
-    async updateAddess(req,res){
+    async updateAddess(req, res) {
         try {
             let user = await User.findOne({ _id: req.params.id });
             if (validation.userFound(user)) {
                 user.address = req.body.address || user.address;
                 await user.save();
-                res.update(res, user);
+                response.update(res, user);
             }
         }
         catch (err) {
@@ -209,11 +209,51 @@ module.exports = {
             if (validation.userFound(user)) {
                 user.description = req.body.description || user.description;
                 await user.save();
-                res.update(res, user);
+                response.update(res, user);
             }
         }
         catch (err) {
             console.log('Description update error: ', err);
+            response.error(res, err);
+        }
+    },
+    async updateEmailVerify(req, res) {
+        try {
+            let user = await UserAuth.findOne({ user_id: req.params.id });
+            if (validation.userFound(user)) {
+                const emailExist = await User.findOne({ email: req.params.email.trim().toLowerCase() });
+                if (emailExist)
+                    throw E.createError(E.getError('DUPLICATE_RESOURCE'), 'email already exist');
+                const code = securityHelper.pinGenerater();
+                const sendData = detailsFormat.mailFormatData({ email: req.params.email, code }, 'emailchange');
+                await serviceCaller.mailSend(sendData, 'mailgun');
+                user.verify_pin = code;
+                await user.save();
+                response.ok(res, { msg: 'done' });
+            }
+        }
+        catch (err) {
+            console.log('Error is: ', err);
+            response.error(res, err);
+        }
+    },
+    async updateEmail(req, res) {
+        try {
+            let userAuth = await UserAuth.findOne({ user_id: req.params.id });
+            if (validation.userFound(userAuth)) {
+                if (userAuth.verify_pin != req.params.pin)
+                    throw E.createError(E.getError('INVALID_PIN'));
+                userAuth.verify_pin = '';
+                await userAuth.save();
+                await User.findOneAndUpdate({ _id: req.params.id }, { $set: { email: req.params.email } });
+                let user = await User.findOne({_id: req.params.id});
+                await jwt.generateTokenAndStore(user);
+                const userDetails = await User.findOne({ _id: req.params.id}).populate({ path: 'auth' });
+                response.update(res, detailsFormat.formateData(userDetails));
+            }
+        }
+        catch (err) {
+            console.log('Error is: ', err);
             response.error(res, err);
         }
     }

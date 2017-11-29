@@ -16,7 +16,9 @@ module.exports = [
     { api: '/user/:id/details-save', method: 'PUT', actions: [auth, user.updateDetails] },
 
     {api: '/user/:id/update_image', method: 'PUT', actions: [tokenAuth.accessTokenVerify, user.uploadeImage]},
-    {api: '/user/:id/update_image', method: 'PUT', actions: [tokenAuth.accessTokenVerify, user.updateAddess]},
-    {api: '/user/:id/update_image', method: 'PUT', actions: [tokenAuth.accessTokenVerify, user.updateDescription]}
+    {api: '/user/:id/update_address', method: 'PUT', actions: [tokenAuth.accessTokenVerify, user.updateAddess]},
+    {api: '/user/:id/update_description', method: 'PUT', actions: [tokenAuth.accessTokenVerify, user.updateDescription]},
+    {api: '/user/:id/verify_email/:email', method: 'PUT', actions: [tokenAuth.accessTokenVerify, user.updateEmailVerify]},
+    {api: '/user/:id/update_email/:pin/:email', method: 'PUT', actions: [tokenAuth.accessTokenVerify, user.updateEmail]}
 
 ]

@@ -37,6 +37,11 @@ module.exports = class Details {
             sendData.subject = '6-Character activation code for activate your account of Problem-Tracker now :)';
             sendData.html = '<h1>Your Problem Tracker Account Activatiov Code</h1><br><h3>' + data.code + '</h3>';
         }
+        else if('emailchange'){
+            sendData.to = data.email;
+            sendData.subject = '6-Character verification code for change your email of Problem-Tracker now :)';
+            sendData.html = '<h1>Your Problem Tracker Verification Code</h1><br><h3>' + data.code + '</h3>';
+        }
         return sendData;
     }
 }
