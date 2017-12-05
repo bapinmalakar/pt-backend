@@ -25,7 +25,7 @@ module.exports = {
     validEmail(email) {
         if (!email || email == 'undefined') throw E.createError(E.getError('DATA_REQUIRED'), type);
         const emailExp = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        if(!emailExp.test(email))  throw E.createError(E.getError('DATA_FORMAT'), 'email');
+        if (!emailExp.test(email)) throw E.createError(E.getError('DATA_FORMAT'), 'email');
         return true;
     },
     userFound(user) {
@@ -43,5 +43,14 @@ module.exports = {
         if (!data || data == 'undefined') throw E.createError(E.getError('DATA_REQUIRED'), 'gender');
         if (!(['MALE', 'FEMALE', 'OTHERS'].find(d => d == data))) throw E.createError(E.getError('DATA_FORMAT'), 'gender');
         return true;
+    },
+    presentAnyOne(data = []) {
+        if (!data.length)
+            throw E.createError(E.getError('DATA_REQUIRED'), 'empty data');
+        for (let item of data) {
+            if (item)
+                return true;
+        }
+        throw E.createError(E.getError('DATA_REQUIRED'), 'empty data');
     }
 }
