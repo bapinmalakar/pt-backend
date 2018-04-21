@@ -1,7 +1,31 @@
 {
-    "apps" : [{
-      "script"    : "server.js",
-      "instances" : "4",
-      "exec_mode" : "cluster" 
-    }]
-  }
+    "apps": [
+        {
+            "name": "app1",
+            "script": "server.js",
+            "instances": "2",
+            "exec_mode": "fork",
+            "env": {
+                "PORT": 8100
+            }
+        },
+        {
+            "name": "app2",
+            "script": "server.js",
+            "instances": "2",
+            "exec_mode": "fork",
+            "env": {
+                "PORT": 8200
+            }
+        },
+        {
+            "name": "app3",
+            "script": "server.js",
+            "instances": "2",
+            "exec_mode": "fork",
+            "env": {
+                "PORT": 8300
+            }
+        }
+    ]
+}
