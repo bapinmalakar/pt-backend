@@ -1,7 +1,7 @@
 'use strict'
 const cluster = require('cluster');
 const workers = require('os').cpus().length;
-const port = process.env.PORT || 8100;
+const port = process.env.PORT || 80;
 
 module.exports = (app) => {
     if (cluster.isMaster) {
